@@ -1,5 +1,5 @@
 # scrape_tool
-scrape_tool
+
 Data Colection seems to be on of the most important sections before starting any application. We just need to know where data came from. They come from Heaven ? No, data can be collected from different sources like published database, website, cloud, blah, blah ... And yes, data collected from website is main topic in this respository. 
 Here, I'm using one ... oh sorry but two popular frameworks to solve this problem. 
 
