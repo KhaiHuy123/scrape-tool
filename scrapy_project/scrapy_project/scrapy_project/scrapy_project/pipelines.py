@@ -1111,10 +1111,4 @@ class DailyMailPipeline:
             value = value.replace('[', '')
             value = value.replace(']', '')
         return item
-
-class NewYorkTimePipeline :
-    def process_data(self, item, spider):
-        adapter = ItemAdapter(item)
-        field_names = adapter.field_names()
-
-        return item
+        
