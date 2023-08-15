@@ -119,7 +119,7 @@ ITEM_PIPELINES = {
 }
 
 # --------------------------- Parameters of Saveto_sqlServerPipeline --------------------------- #
-SQL_SERVER = 'DESKTOP-LMGN073\SQLEXPRESS'
+SQL_SERVER = 'YOUR SEVER'
 #SQL_DATABASE = 'manga'
 #SQL_DATABASE = 'manga_nettruyen'
 #SQL_DATABASE = 'manga_truyenqqi'
@@ -127,7 +127,7 @@ SQL_DATABASE = 'online_books'
 #SQL_DATABASE = 'product_web_scraping'
 #SQL_PASSWORD = 'password' # No need if using local database engine DBSM
 SQL_AUTHENTICATION = 'Trusted_Connection=yes'
-SQL_USERNAME = 'DESKTOP-LMGN073\HTH'
+SQL_USERNAME = 'USER NAME'
 
 # --------------------------- Stored data in flat file (csv) --------------------------- #
 #FEEDS = {
