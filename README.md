@@ -11,7 +11,7 @@ Each framework has advantages itself, Selenium usually used for automating web b
 
 Another challenge is the tools created by those frameworks that they need to be maintained ocasionally for the update version. Why ? Because the structure of target website can change serveral times in the future. We colect data base on web element on website (using css, xpath, ...) so that is the reason
 
-This respository is not completed yet. Two things think I need to update is to run Scrapy spider on cloud and create the application for using data collected. Nowadays, there are so many services that provide the answer for run application to scrape and store data on cloud like DigitalOcean, Scrapyd ... And after all, we need to build a application like web-app, destop-app to make sure that our scraping-job is not useless ...  Here I create simple destop-app using Tkinter in Python Programming Language. It's easy to build with support of this framework Tkinter ... 
+This respository is not completed yet. One thing think I need to update is to run Scrapy spider on cloud . Nowadays, there are so many services that provide the answer for running application to scrape and store data on cloud like DigitalOcean, Scrapyd ... And after all, we need to build a application like web-app, destop-app to make sure that our scraping-job is not useless ...  Here I create simple destop-app using Tkinter in Python Programming Language. It's easy to build with support of this framework Tkinter .
 
 Information here can be missed or incorrect anyway. If having any questions, contact me by this : nkhuy1109@gmail.com 
 
