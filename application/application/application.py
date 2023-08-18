@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import pyodbc
 import webbrowser
 
-SQL_SERVER = 'DESKTOP-LMGN073\SQLEXPRESS'
+SQL_SERVER = 'YOUR SERVER'
 DRIVER = "{ODBC Driver 17 for SQL Server}"
 # SQL_DATABASE = 'manga'
 # SQL_DATABASE = 'manga_nettruyen'
@@ -14,7 +14,7 @@ SQL_DATABASE = 'online_books'
 # SQL_DATABASE = 'product_web_scraping'
 SQL_PASSWORD = 'password' # No need if using local database engine DBSM
 SQL_AUTHENTICATION = 'Trusted_Connection=yes'
-SQL_USERNAME = 'DESKTOP-LMGN073\HTH'
+SQL_USERNAME = 'USER NAME'
 
 def executer_database_commands():
     # connection_string = f"Driver={DRIVER};Server={SQL_SERVER};Database={SQL_DATABASE};UID={SQL_USERNAME};PWD={SQL_PASSWORD};"
