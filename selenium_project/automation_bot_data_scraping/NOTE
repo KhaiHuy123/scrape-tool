@@ -1,6 +1,7 @@
 Dear,
-When clone this repostity, make sure that you have installed necessary libraries .
+When clone this repository, make sure that you have installed necessary libraries (in requirement.txt) .
 Please replace paths in this reposity by your own local paths before running program .
-For running these python scripts. Make sure you have downloaded suitable microsoft driver on your own device .
+For running these python scripts. Make sure you have downloaded suitable microsoft driver on your own device (very important) .
 You should check version of your microsoft edge browser (example : Version 111.0.1661.51).
 Here's some options for you to choose suitable browser driver in folder microsoftdriver.
+Good luck
