@@ -7,11 +7,11 @@ import webbrowser
 
 class Database:
     def __init__(self):
-        self.SQL_SERVER = 'DESKTOP-LMGN073\SQLEXPRESS'
+        self.SQL_SERVER = 'YOUR SERVER'
         self.DRIVER = "{ODBC Driver 17 for SQL Server}"
         self.SQL_DATABASE = 'online_books'
         self.SQL_AUTHENTICATION = 'Trusted_Connection=yes'
-        self.SQL_USERNAME = 'DESKTOP-LMGN073\HTH'
+        self.SQL_USERNAME = 'USER NAME'
         self.SQL_PASSWORD = 'password'  # No need if using local database engine DBSM
 
     def connect(self):
