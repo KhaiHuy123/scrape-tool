@@ -1,33 +1,27 @@
-# scrape_tool
+# Scrape Tool
 
-Data Colection seems to be one of the most important sections before building any applications. We just need to know where data came from. They come from Heaven ? No, data can be collected from different sources like published database, website, cloud, blah blah ... And yes, data collected from website is the main topic in this respository. 
-Here, I'm using one ... oh sorry but two popular frameworks to solve this problem. 
+Data collection is one of the most crucial steps before building any applications. We need to know where the data comes from. Does it come from heaven? No, data can be collected from various sources such as published databases, websites, the cloud, and more. In this repository, the main focus is on collecting data from websites, which is achieved through the use of two popular Python frameworks: Selenium and Scrapy.
 
-Guess what, It's Automation-Web Scraping using Selenium and Scrapy in Python Programming Language
+Why Python? Well, the answer is simple. Python is straightforward and easy to use.
 
-Why Python ? ... Because it's simple, I can just say that 
+Each framework has its own advantages. Selenium is commonly used for automating web browsers and performing a series of actions on them (known as "chain-working"). This makes it useful for scenarios where complex interactions, like moving to specific elements, performing double-clicks, or right-clicking, are required. However, using Selenium for web scraping might not always be the best idea. There are cases where Selenium can handle complex websites with JavaScript-related issues that Scrapy struggles with. Some developers even prefer using Java with Selenium due to these reasons. Selenium relies on a webdriver to work, which is a crucial component for enabling Selenium to interact with browsers.
 
-Each framework has advantages itself, Selenium usually used for automating web browser or we can say chain-working (chain of actions on web browser like : move to that object and perform double click or right click  and do next action like send keys to input field ... Consequence of these actions is the creation of chain-working on web browser ... ). But using this framework for web-scraping not supposed to be the good idea. In some case, Selenium can be used for excecuting complex website contains issue of JavaScript problems that Scrapy can not handle well. And people sometimes prefer using Java Programming Language to build a Selenium tool than Python Programming Language. When using Selenium, we need support form webdriver - this guy is the main key which helps our Selenium tool become available to work. About Scrapy, this framework is super complex ...  and structured by OOP (Oriented Objetc Programming). Unlike Selenium tool, which can fully work in just 1 module. Scrapy project includes 5 modules : items.py , middleware.py , settings.py , spider.py , pipeline.py . Scrapy with its complex nature allow us to do more tasks than just collect data from website like : storing data into database ... And this is the point. We can store data into database and later use it for our applications by using Scrapy.    
+On the other hand, Scrapy is a more complex framework structured around Object-Oriented Programming (OOP) principles. Unlike Selenium, which can work effectively within a single module, Scrapy projects are organized into five modules: items.py, middleware.py, settings.py, spider.py, and pipeline.py. The complexity of Scrapy allows for more tasks beyond simple data collection, such as storing data in databases. This is where Scrapy shines—data can be collected and later used in applications.
 
-Another challenge is the tools created by those frameworks that they need to be maintained ocasionally for the update version. Why ? Because the structure of target website can change serveral times in the future. We colect data base on web element on website (using css, xpath, ...) so that is the reason
+A significant challenge with these frameworks is the need for occasional maintenance due to updates. The structure of the target websites may change several times in the future. Since data collection relies on web elements and their attributes (using CSS, XPath, etc.), these changes can affect the scraping process.
 
-This respository is not completed yet. One thing think I need to update is to run Scrapy spider on cloud . Nowadays, there are so many services that provide the answer for running application to scrape and store data on cloud like DigitalOcean, Scrapyd ... And after all, we need to build a application like web-app, destop-app to make sure that our scraping-job is not useless ...  Here I create simple destop-app using Tkinter in Python Programming Language. It's easy to build with support of this framework Tkinter .
+This repository is a work in progress. One future update is to run Scrapy spiders on the cloud. Various services, such as DigitalOcean and Scrapyd, provide solutions for running scraping applications and storing data on the cloud. Additionally, building applications like web apps or desktop apps ensures that the scraping efforts are not in vain. For this purpose, a simple desktop app has been created using Python's Tkinter framework, which facilitates app development.
 
-Information here can be missed or incorrect anyway. If having any questions, contact me by this : nkhuy1109@gmail.com 
+Please note that the information presented here might be incomplete or incorrect. For any questions or clarifications, feel free to contact me at nkhuy1109@gmail.com.
 
-Thanks for your consideration
+Thank you for your interest.
 
-More info : 
+More Information:
 
-Selenium FrameWork : 
+**Selenium Framework:**
+- [Selenium Python API Documentation](https://www.selenium.dev/selenium/docs/api/py/api.html)
+- [Selenium with Python Documentation](https://selenium-python.readthedocs.io/index.html)
+- [Selenium Example Gist](https://gist.github.com/baijum/1047207/1ac84b1ae076e3d59e994a00bada0bf4bee5fd63)
 
-  https://www.selenium.dev/selenium/docs/api/py/api.html
-  
-  https://selenium-python.readthedocs.io/index.html
-  
-  https://gist.github.com/baijum/1047207/1ac84b1ae076e3d59e994a00bada0bf4bee5fd63
-
-Scrapy FrameWork :
-
-  https://docs.scrapy.org/en/latest/
-  
+**Scrapy Framework:**
+- [Scrapy Documentation](https://docs.scrapy.org/en/latest/)
