@@ -1063,7 +1063,7 @@ class FahasaPipeline:
         adapter[page_number] = value
 
         prices_pn = ['old_price', 'current_price', 'weight', 'book_cover_size']
-        list_symbol = [",", "đ", ".", "'", " ", "cm"]
+        list_symbol = [",", "đ", "'", " ", "cm"]
         for price in prices_pn:
             value = str(adapter.get(price))
             for symbol in list_symbol:
