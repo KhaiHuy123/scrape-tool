@@ -10,7 +10,8 @@ On the other hand, Scrapy is a more complex framework structured around Object-O
 
 For example, we can mange online_books database like this  : 
 
-![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/970be688-67df-4a9b-9b8c-029e64f3077a)
+![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/2f4142f4-664c-4113-a7b2-16d5b1249ff2)
+
 
 A significant challenge with tools created by these frameworks is the need for occasional maintenance due to updates. The structure of the target websites may change several times in the future. Since data collection relies on web elements and their attributes (using CSS, XPath, etc.), these changes can affect the scraping process.
 
