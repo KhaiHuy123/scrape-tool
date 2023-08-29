@@ -436,81 +436,6 @@ class Saveto_sqlServerAmazonPipeline:
         )
         self.cursor.commit()
 
-class Saveto_sqlServerFahasaListPipeline:
-    def __init__(self, server, database, username, authentication):
-        self.server = server
-        self.database = database
-        self.username = username
-        self.authentication = authentication
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        server = crawler.settings.get("SQL_SERVER")
-        database = crawler.settings.get("SQL_DATABASE")
-        username = crawler.settings.get("SQL_USERNAME")
-        authentication = crawler.settings.get("SQL_AUTHENTICATION")
-        if not server or not database:
-            raise NotConfigured("SQL Server connection details are missing.")
-        return cls(server, database, username, authentication)
-
-    def open_spider(self, spider):
-        # Connection information
-        driver = "{ODBC Driver 17 for SQL Server}"
-        server_name = self.server
-        database_name = self.database
-        authentication = self.authentication
-        username = self.username
-        # Connection string
-        connection_string = f"DRIVER={driver};SERVER={server_name};DATABASE={database_name};{authentication};UID={username}"
-        # Connect to database
-        self.conn = pyodbc.connect(connection_string)
-        self.cursor = self.conn.cursor()
-        self.create_series_table()
-
-    def close_spider(self, spider):
-        self.cursor.close()
-        self.conn.close()
-
-    def process_item(self, item, spider):
-        self.insert_series_data(item)
-        return item
-
-    def insert_series_data(self, item):
-        self.cursor.execute(
-            ''' 
-            INSERT INTO serires_fahasa (
-                url ,
-                name ,
-                latest_chap ,
-                follow 
-            ) VALUES (
-                ?, ?, ?, ?
-            )
-            ''', (
-                item['url'],
-                item['name'],
-                item['lastest_chap'],
-                item['follow']
-            )
-        )
-        self.cursor.commit()
-        pass
-
-    def create_series_table(self):
-        # Create SeriesTable
-        self.cursor.execute(
-            '''
-            CREATE TABLE  serires_fahasa (
-                product_code INT IDENTITY(1,1) ,
-                url NVARCHAR(255) PRIMARY KEY,
-                name NVARCHAR(500) ,
-                latest_chap NVARCHAR(500) ,
-                follow NVARCHAR(500) 
-            )
-            '''
-        )
-        self.cursor.commit()
-
 class Saveto_sqlServerFahasaPipeline:
     def __init__(self, server, database, username, authentication):
         self.server = server
@@ -548,6 +473,8 @@ class Saveto_sqlServerFahasaPipeline:
         self.insert_supplier_table(item)
         self.insert_book_cover_type_table(item)
         self.insert_book_cover_size_table(item)
+        self.insert_discount_table(item)
+        self.insert_price_table(item)
         self.insert_main_data(item)
         return item
 
@@ -568,13 +495,13 @@ class Saveto_sqlServerFahasaPipeline:
                 author NVARCHAR(500) ,
                 book_cover_type NVARCHAR(80) ,
                 book_cover_size NVARCHAR(80) ,
-                product_id NVARCHAR(50) UNIQUE,
+                product_id NVARCHAR(50) ,
                 product_discription NVARCHAR(MAX) ,
                 weight NVARCHAR(20) ,
                 page_number NVARCHAR(10) ,
                 picture NVARCHAR(255) ,
                 current_price NVARCHAR(30) ,
-                old_price NVARCHAR(30),
+                old_price NVARCHAR(30 ) ,
                 discount NVARCHAR(20) ,
                 release_day NVARCHAR(200) ,
                 PRIMARY KEY (title) 
@@ -626,6 +553,39 @@ class Saveto_sqlServerFahasaPipeline:
             )
             '''
         )
+        # Create discount table
+        self.cursor.execute(
+            '''
+            CREATE TABLE  discount_fahasa (
+                 discount_id INT IDENTITY(1,1) PRIMARY KEY, 
+                 discount_info NVARCHAR(20) 
+            )
+            '''
+        )
+        # Create product_price table
+        self.cursor.execute(
+            '''
+            CREATE TABLE  product_price_fahasa (
+                url NVARCHAR(255) ,
+                title NVARCHAR(500) ,
+                publisher NVARCHAR(500) ,
+                supplier NVARCHAR(500) ,
+                author NVARCHAR(500) ,
+                book_cover_type NVARCHAR(80) ,
+                book_cover_size NVARCHAR(80) ,
+                product_id NVARCHAR(50) ,
+                product_discription NVARCHAR(MAX) ,
+                weight NVARCHAR(20) ,
+                page_number NVARCHAR(10) ,
+                picture NVARCHAR(255) ,
+                current_price NVARCHAR(30) ,
+                old_price NVARCHAR(30 ) ,
+                discount NVARCHAR(20) ,
+                release_day NVARCHAR(200) ,
+                PRIMARY KEY (product_id) 
+            )
+            '''
+        )
         self.cursor.commit()
 
     def insert_author_table(self, item):
@@ -651,7 +611,7 @@ class Saveto_sqlServerFahasaPipeline:
                             ''', (author_info))
                     self.conn.commit()
 
-    def insert_publisher_table(self,item):
+    def insert_publisher_table(self, item):
         # Convert 'item['publisher']' to a list if it's not already a list
         if not isinstance(item['publisher'], list):
             publishers = [item['publisher']]
@@ -674,7 +634,7 @@ class Saveto_sqlServerFahasaPipeline:
                             ''', (publisher_info))
                     self.conn.commit()
 
-    def insert_supplier_table(self,item):
+    def insert_supplier_table(self, item):
         # Convert 'item['supplier']' to a list if it's not already a list
         if not isinstance(item['supplier'], list):
             suppliers = [item['supplier']]
@@ -732,16 +692,83 @@ class Saveto_sqlServerFahasaPipeline:
             # Check if book_cover_size already exists in the book_cover_fahasa table
             if book_cover_size and book_cover_size.strip():
                 self.cursor.execute('''
-                            SELECT COUNT(*) FROM book_cover_size_fahasa WHERE book_cover_size = ?
-                                ''', (book_cover_size))
+                    SELECT COUNT(*) FROM book_cover_size_fahasa WHERE book_cover_size = ?
+                        ''', (book_cover_size))
                 count = self.cursor.fetchone()[0]
 
                 # If book_cover_size does not exist, insert it into the book_cover_size_fahasa table
                 if count == 0:
                     self.cursor.execute('''
-                                INSERT INTO book_cover_size_fahasa (book_cover_size) VALUES (?);
-                                    ''', (book_cover_size))
+                        INSERT INTO book_cover_size_fahasa (book_cover_size) VALUES (?);
+                            ''', (book_cover_size))
                     self.conn.commit()
+
+    def insert_discount_table(self, item):
+        # Convert 'item['discount']' to a list if it's not already a list
+        if not isinstance(item['discount'], list):
+            discounts = [item['discount']]
+        else:
+            discounts = item['discount']
+
+        # Loop through each discount value
+        for discount_info in discounts:
+            # Check if discount already exists in the discount_fahasa table
+            if discount_info and discount_info.strip():
+                self.cursor.execute('''
+                    SELECT COUNT(*) FROM discount_fahasa WHERE discount_info = ?
+                        ''', (discount_info))
+                count = self.cursor.fetchone()[0]
+
+                # If discount does not exist, insert it into the discount_fahasa table
+                if count == 0:
+                    self.cursor.execute('''
+                        INSERT INTO discount_fahasa (discount_info) VALUES (?);
+                            ''', (discount_info))
+                    self.conn.commit()
+
+    def insert_price_table(self, item):
+        self.cursor.execute(
+            ''' 
+            INSERT INTO product_price_fahasa (
+                url  , 
+                title  , 
+                publisher ,
+                supplier , 
+                author  , 
+                book_cover_type  , 
+                book_cover_size  , 
+                product_id  ,
+                product_discription,
+                weight  ,
+                page_number ,
+                picture ,
+                current_price ,
+                old_price  , 
+                discount ,
+                release_day  
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            ''', (
+                item['url'],
+                item['title'],
+                item['publisher'],
+                item['supplier'],
+                item['author'],
+                item['book_cover_type'],
+                item['book_cover_size'],
+                item['product_id'],
+                item['product_discription'],
+                item['weight'],
+                item['page_number'],
+                item['picture'],
+                item['current_price'],
+                item['old_price'],
+                item['discount'],
+                item['release_day']
+            )
+        )
+        self.cursor.commit()
 
     def insert_main_data(self, item):
         self.cursor.execute(
@@ -755,10 +782,10 @@ class Saveto_sqlServerFahasaPipeline:
                 book_cover_type  , 
                 book_cover_size  , 
                 product_id  ,
-                product_discription  ,
+                product_discription,
                 weight  ,
-                page_number  ,
-                picture  ,
+                page_number ,
+                picture ,
                 current_price ,
                 old_price  , 
                 discount ,
@@ -849,68 +876,91 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
             ALTER TABLE books_fahasa
             ADD book_cover_size_id INT 
         ''')
-        self.conn.commit()
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ADD discount_id INT
+        ''')
+        self.cursor.commit()
 
     def add_foreign_key_constraints(self):
         self.cursor.execute('''
             ALTER TABLE books_fahasa
-            ADD FOREIGN KEY (author_id) REFERENCES author_fahasa(author_id)
+            ADD FOREIGN KEY (author_id)
+            REFERENCES author_fahasa(author_id)
         ''')
-
         self.cursor.execute('''
             ALTER TABLE books_fahasa
-            ADD FOREIGN KEY (supplier_id) REFERENCES supplier_fahasa(supplier_id)
+            ADD FOREIGN KEY (supplier_id) 
+            REFERENCES supplier_fahasa(supplier_id)
         ''')
-
         self.cursor.execute('''
             ALTER TABLE books_fahasa
-            ADD FOREIGN KEY (publisher_id) REFERENCES publisher_fahasa(publisher_id)
+            ADD FOREIGN KEY (publisher_id) 
+            REFERENCES publisher_fahasa(publisher_id)
         ''')
-
         self.cursor.execute('''
             ALTER TABLE books_fahasa
-            ADD FOREIGN KEY (book_cover_id) REFERENCES book_cover_fahasa(book_cover_id)
+            ADD FOREIGN KEY (book_cover_id) 
+            REFERENCES book_cover_fahasa(book_cover_id)
         ''')
-
         self.cursor.execute('''
             ALTER TABLE books_fahasa
-            ADD FOREIGN KEY (book_cover_size_id) REFERENCES book_cover_size_fahasa(book_cover_size_id)
+            ADD FOREIGN KEY (book_cover_size_id) 
+            REFERENCES book_cover_size_fahasa(book_cover_size_id)
         ''')
-        self.conn.commit()
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ADD FOREIGN KEY (discount_id)
+            REFERENCES discount_fahasa(discount_id)
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            ADD FOREIGN KEY (product_id)
+            REFERENCES product_price_fahasa(product_id)
+        ''')
+        self.cursor.commit()
 
     def update_foreign_key_data(self):
         self.cursor.execute('''
             UPDATE books_fahasa
             SET author_id = author_fahasa.author_id
-            FROM books_fahasa INNER JOIN author_fahasa ON books_fahasa.author = author_fahasa.author_info
+            FROM books_fahasa INNER JOIN author_fahasa 
+            ON books_fahasa.author = author_fahasa.author_info
         ''')
-
         self.cursor.execute('''
             UPDATE books_fahasa
             SET supplier_id = supplier_fahasa.supplier_id
-            FROM books_fahasa INNER JOIN supplier_fahasa ON books_fahasa.supplier = supplier_fahasa.supplier_info
+            FROM books_fahasa INNER JOIN supplier_fahasa 
+            ON books_fahasa.supplier = supplier_fahasa.supplier_info
         ''')
-
         self.cursor.execute('''
             UPDATE books_fahasa
             SET publisher_id = publisher_fahasa.publisher_id
-            FROM books_fahasa INNER JOIN publisher_fahasa ON books_fahasa.publisher = publisher_fahasa.publisher_info
+            FROM books_fahasa INNER JOIN publisher_fahasa
+            ON books_fahasa.publisher = publisher_fahasa.publisher_info
         ''')
-
         self.cursor.execute('''
             UPDATE books_fahasa
             SET book_cover_id = book_cover_fahasa.book_cover_id
-            FROM books_fahasa INNER JOIN book_cover_fahasa ON books_fahasa.book_cover_type = book_cover_fahasa.book_cover_type
+            FROM books_fahasa INNER JOIN book_cover_fahasa
+            ON books_fahasa.book_cover_type = book_cover_fahasa.book_cover_type
         ''')
-
         self.cursor.execute('''
             UPDATE books_fahasa
             SET book_cover_size_id = book_cover_size_fahasa.book_cover_size_id
-            FROM books_fahasa INNER JOIN book_cover_size_fahasa ON books_fahasa.book_cover_size = book_cover_size_fahasa.book_cover_size
+            FROM books_fahasa INNER JOIN book_cover_size_fahasa
+            ON books_fahasa.book_cover_size = book_cover_size_fahasa.book_cover_size
         ''')
-        self.conn.commit()
+        self.cursor.execute('''
+            UPDATE product_price_fahasa
+            SET discount_id = discount_fahasa.discount_id
+            FROM product_price_fahasa INNER JOIN discount_fahasa
+            ON product_price_fahasa.discount = discount_fahasa.discount_info
+        ''')
+        self.cursor.commit()
 
     def drop_unused_columns(self):
+        # drop columns in books_fahasa table
         self.cursor.execute('''
             ALTER TABLE books_fahasa
             DROP COLUMN author
@@ -931,7 +981,74 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
             ALTER TABLE books_fahasa
             DROP COLUMN book_cover_size
         ''')
-        self.conn.commit()
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN discount
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN current_price
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN old_price
+        ''')
+        self.cursor.commit()
+
+        # drop columns in product_price_fahasa table
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN discount
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN release_day 
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN picture
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN page_number
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN weight
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN product_discription
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN book_cover_size
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN book_cover_type
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN author
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN supplier
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN publisher
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN title
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            DROP COLUMN url
+        ''')
+        self.cursor.commit()
 
 class AmazonPipeline:
     def process_item(self, item, spider):
