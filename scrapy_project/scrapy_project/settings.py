@@ -119,7 +119,7 @@ SQL_SERVER = ''
 #SQL_DATABASE = 'manga_truyenqqi'
 SQL_DATABASE = 'ONLINEBOOKS'
 #SQL_DATABASE = 'DB_bookstore'
-#SQL_DATABASE = 'product_web_scraping'
+#SQL_DATABASE = 'online_books'
 #SQL_PASSWORD = 'password' # No need if using local database engine DBSM
 SQL_AUTHENTICATION = 'Trusted_Connection=yes'
 SQL_USERNAME = ''
