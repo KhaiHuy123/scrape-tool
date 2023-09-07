@@ -852,6 +852,7 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
     def close_spider(self, spider):
         self.update_foreign_key_data()
         self.drop_unused_columns()
+        self.data_type()
         self.cursor.close()
         self.conn.close()
 
@@ -959,6 +960,45 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         ''')
         self.cursor.commit()
 
+    def data_type(self):
+        self.cursor.execute('''
+            UPDATE books_fahasa
+            SET  weight = 0
+            WHERE weight IS NULL OR weight is NONE OR weight ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            UPDATE books_fahasa
+            SET page_number = 0
+            WHERE page_number IS NULL OR page_number is NONE OR page_number ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            ALTER COLUMN weight INT
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            ALTER COLUMN page_number INT
+        ''')
+        self.cursor.execute('''
+            UPDATE product_price_fahasa
+            SET  old_price = 0
+            WHERE old_price IS NULL OR old_price is NONE OR old_price ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ALTER COLUMN old_price INT
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ALTER COLUMN current_price INT
+        ''')
+        self.cursor.execute('''
+            UPDATE discount_fahasa
+            SET discount_info = CAST(REPLACE(discount_info, '%', '') AS DECIMAL(18, 2)) / 100
+            WHERE discount LIKE '%%' ; -- Filter only rows with percentage values        
+        ''')
+        self.cursor.commit()
+    
     def drop_unused_columns(self):
         # drop columns in books_fahasa table
         self.cursor.execute('''
