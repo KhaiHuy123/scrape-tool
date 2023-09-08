@@ -964,12 +964,12 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         self.cursor.execute('''
             UPDATE books_fahasa
             SET  weight = 0
-            WHERE weight IS NULL OR weight is NONE OR weight ='None'  ; -- Replace 0 with the desired value
+            WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
         ''')
         self.cursor.execute('''
             UPDATE books_fahasa
             SET page_number = 0
-            WHERE page_number IS NULL OR page_number is NONE OR page_number ='None'  ; -- Replace 0 with the desired value
+            WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
         ''')
         self.cursor.execute('''
             ALTER TABLE books_fahasa
@@ -982,7 +982,7 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         self.cursor.execute('''
             UPDATE product_price_fahasa
             SET  old_price = 0
-            WHERE old_price IS NULL OR old_price is NONE OR old_price ='None'  ; -- Replace 0 with the desired value
+            WHERE old_price IS NULL OR old_price ='None'  ; -- Replace 0 with the desired value
         ''')
         self.cursor.execute('''
             ALTER TABLE product_price_fahasa
@@ -1220,7 +1220,7 @@ class FahasaPipeline:
         adapter[page_number] = value
 
         prices_pn = ['old_price', 'current_price', 'weight', 'book_cover_size']
-        list_symbol = [",", "đ", "'", " ", "cm"]
+        list_symbol = [",", "đ", "'", " ", "." ,"cm"]
         for price in prices_pn:
             value = str(adapter.get(price))
             for symbol in list_symbol:
