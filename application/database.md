@@ -34,9 +34,9 @@ The CRM desktop application offers the following functionality:
 
 8. **External Logo**: The Scout Regiment logo is displayed for branding and aesthetics.
 
-This CRM desktop application is designed to efficiently manage and view book data, making it a valuable tool for businesses or individuals working with book-related information. Users can easily navigate, update, and check related attributes to ensure data accuracy and completeness.
+This CRM desktop application is designed to efficiently manage and view book data, making it a valuable tool for individuals working with book-related information. Users can easily navigate, update, and check related attributes to ensure data accuracy and completeness.
 
-Here is diagram of database used in this application. It represent for the basic relational database:
+Here is diagram of relational data model used in this application :
 
 ![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/ca599e1e-2728-46ac-9ff1-e0e64fc2e95b)
 
