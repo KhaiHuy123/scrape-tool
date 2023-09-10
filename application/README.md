@@ -1,3 +1,7 @@
+User Interface of CRM (Custom Relationship Management) destop app developed by using Tkinter framework in Python. One future update is to add more functionalities to help user performing dicrectly to data model. 
+
+![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/1391bf14-2c5e-46bb-ac64-2a0aef764004)
+
 ### Interface:
 The CRM desktop application features a user-friendly interface with the following components:
 
@@ -16,7 +20,7 @@ The CRM desktop application features a user-friendly interface with the followin
 7. **Support Button**: An additional button with the Scout Regiment logo is present, offering access to external support resources.
 
 ### Functionality:
-The CRM desktop application offers the following functionality:
+The CRM desktop application offers the following functionalities:
 
 1. **Database Connection**: The app connects to a SQL Server database using the provided connection details, including server name, authentication, and database name.
 
