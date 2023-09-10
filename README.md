@@ -8,7 +8,7 @@ Each framework has its own advantages. Selenium is commonly used for automating 
 
 On the other hand, Scrapy is a more complex framework structured around Object-Oriented Programming (OOP) principles. Unlike Selenium, which can work effectively within a single module, Scrapy projects are organized into five modules: items.py, middleware.py, settings.py, spider.py, and pipelines.py. The complexity of Scrapy allows for more tasks beyond simple data collection, such as storing data in databases. This is the point, shines_data can be collected and store in database system and later used in applications. 
 
-For example, we can mange online_books database like this  : 
+For example, we can manage online_books data model like this  : 
 
 ![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/2f4142f4-664c-4113-a7b2-16d5b1249ff2)
 
