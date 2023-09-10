@@ -997,6 +997,10 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
             SET discount_info = CAST(REPLACE(discount_info, '%', '') AS DECIMAL(18, 2)) / 100
             WHERE discount LIKE '%%' ; -- Filter only rows with percentage values        
         ''')
+        self.cursor.execute('''
+            UPDATE discount_fahasa
+            SET discount_info = CAST(discount_info AS DECIMAL(10, 3));
+        ''')
         self.cursor.commit()
     
     def drop_unused_columns(self):
