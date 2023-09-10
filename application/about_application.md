@@ -1,4 +1,4 @@
-User Interface of CRM (Custom Relationship Management) destop app developed by using Tkinter framework in Python. One future update is to add more functionalities to help user performing dicrectly to data model. 
+User Interface of CRM (Custom Relationship Management) destop app developed by using Tkinter framework in Python
 
 ![image](https://github.com/KhaiHuy123/scrape_tool/assets/86825653/1391bf14-2c5e-46bb-ac64-2a0aef764004)
 
