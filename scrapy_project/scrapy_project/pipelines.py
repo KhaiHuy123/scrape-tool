@@ -1265,24 +1265,24 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
 
     def data_type(self):
         # edit data type in books_fahasa table
-        self.cursor.execute('''
-            UPDATE books_fahasa
-            SET weight = 0
-            WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
-        ''')
-        self.cursor.execute('''
-            UPDATE books_fahasa
-            SET page_number = 0
-            WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE books_fahasa
-            ALTER COLUMN weight INT
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE books_fahasa
-            ALTER COLUMN page_number INT
-        ''')
+        # self.cursor.execute('''
+        #     UPDATE books_fahasa
+        #     SET weight = 0
+        #     WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
+        # ''')
+        # self.cursor.execute('''
+        #     UPDATE books_fahasa
+        #     SET page_number = 0
+        #     WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
+        # ''')
+        # self.cursor.execute('''
+        #     ALTER TABLE books_fahasa
+        #     ALTER COLUMN weight INT
+        # ''')
+        # self.cursor.execute('''
+        #     ALTER TABLE books_fahasa
+        #     ALTER COLUMN page_number INT
+        # ''')
 
         # edit data type in product_price_fahasa
         self.cursor.execute('''
