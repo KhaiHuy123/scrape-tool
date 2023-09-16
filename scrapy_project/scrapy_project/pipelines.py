@@ -10,7 +10,6 @@ import pandas as pd
 import pyodbc
 from itemadapter import ItemAdapter
 from scrapy.exceptions import NotConfigured
-from .items import FahasaBook, FahasaBookList
 
 class ScrapyProjectPipeline:
     def process_item(self, item, spider):
@@ -436,6 +435,81 @@ class Saveto_sqlServerAmazonPipeline:
         )
         self.cursor.commit()
 
+class Saveto_sqlServerFahasaListPipeline:
+    def __init__(self, server, database, username, authentication):
+        self.server = server
+        self.database = database
+        self.username = username
+        self.authentication = authentication
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        server = crawler.settings.get("SQL_SERVER")
+        database = crawler.settings.get("SQL_DATABASE")
+        username = crawler.settings.get("SQL_USERNAME")
+        authentication = crawler.settings.get("SQL_AUTHENTICATION")
+        if not server or not database:
+            raise NotConfigured("SQL Server connection details are missing.")
+        return cls(server, database, username, authentication)
+
+    def open_spider(self, spider):
+        # Connection information
+        driver = "{ODBC Driver 17 for SQL Server}"
+        server_name = self.server
+        database_name = self.database
+        authentication = self.authentication
+        username = self.username
+        # Connection string
+        connection_string = f"DRIVER={driver};SERVER={server_name};DATABASE={database_name};{authentication};UID={username}"
+        # Connect to database
+        self.conn = pyodbc.connect(connection_string)
+        self.cursor = self.conn.cursor()
+        self.create_series_table()
+
+    def close_spider(self, spider):
+        self.cursor.close()
+        self.conn.close()
+
+    def process_item(self, item, spider):
+        self.insert_series_data(item)
+        return item
+
+    def insert_series_data(self, item):
+        self.cursor.execute(
+            ''' 
+            INSERT INTO serires_fahasa (
+                url ,
+                name ,
+                latest_chap ,
+                follow 
+            ) VALUES (
+                ?, ?, ?, ?
+            )
+            ''', (
+                item['url'],
+                item['name'],
+                item['lastest_chap'],
+                item['follow']
+            )
+        )
+        self.cursor.commit()
+        pass
+
+    def create_series_table(self):
+        # Create SeriesTable
+        self.cursor.execute(
+            '''
+            CREATE TABLE  serires_fahasa (
+                product_code INT IDENTITY(1,1) ,
+                url NVARCHAR(255) PRIMARY KEY,
+                name NVARCHAR(500) ,
+                latest_chap NVARCHAR(500) ,
+                follow NVARCHAR(500) 
+            )
+            '''
+        )
+        self.cursor.commit()
+
 class Saveto_sqlServerFahasaPipeline:
     def __init__(self, server, database, username, authentication):
         self.server = server
@@ -475,6 +549,7 @@ class Saveto_sqlServerFahasaPipeline:
         self.insert_book_cover_size_table(item)
         self.insert_discount_table(item)
         self.insert_price_table(item)
+        self.insert_details_table(item)
         self.insert_main_data(item)
         return item
 
@@ -488,7 +563,7 @@ class Saveto_sqlServerFahasaPipeline:
             '''
             CREATE TABLE books_fahasa (
                 product_code INT IDENTITY(1,1) ,
-                url NVARCHAR(255) ,
+                url NVARCHAR(255) UNIQUE,
                 title NVARCHAR(500) ,
                 publisher NVARCHAR(500) ,
                 supplier NVARCHAR(500) ,
@@ -504,7 +579,7 @@ class Saveto_sqlServerFahasaPipeline:
                 old_price NVARCHAR(30 ) ,
                 discount NVARCHAR(20) ,
                 release_day NVARCHAR(200) ,
-                PRIMARY KEY (title) 
+                PRIMARY KEY (product_code) 
             )
             '''
         )
@@ -566,6 +641,31 @@ class Saveto_sqlServerFahasaPipeline:
         self.cursor.execute(
             '''
             CREATE TABLE  product_price_fahasa (
+                url NVARCHAR(255) ,
+                title NVARCHAR(500) ,
+                publisher NVARCHAR(500) ,
+                supplier NVARCHAR(500) ,
+                author NVARCHAR(500) ,
+                book_cover_type NVARCHAR(80) ,
+                book_cover_size NVARCHAR(80) ,
+                product_id NVARCHAR(50) ,
+                product_discription NVARCHAR(MAX) ,
+                weight NVARCHAR(20) ,
+                page_number NVARCHAR(10) ,
+                picture NVARCHAR(255) ,
+                current_price NVARCHAR(30) ,
+                old_price NVARCHAR(30 ) ,
+                discount NVARCHAR(20) ,
+                release_day NVARCHAR(200) ,
+                PRIMARY KEY (product_id) 
+            )
+            '''
+        )
+        # Create details table
+        self.cursor.execute(
+            '''
+            CREATE TABLE details_fahasa (
+                product_code INT IDENTITY(1,1) ,
                 url NVARCHAR(255) ,
                 title NVARCHAR(500) ,
                 publisher NVARCHAR(500) ,
@@ -814,6 +914,50 @@ class Saveto_sqlServerFahasaPipeline:
         )
         self.cursor.commit()
 
+    def insert_details_table(self, item):
+        self.cursor.execute(
+            ''' 
+            INSERT INTO details_fahasa (
+                url  , 
+                title  , 
+                publisher ,
+                supplier , 
+                author  , 
+                book_cover_type  , 
+                book_cover_size  , 
+                product_id  ,
+                product_discription,
+                weight  ,
+                page_number ,
+                picture ,
+                current_price ,
+                old_price  , 
+                discount ,
+                release_day  
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            ''', (
+                item['url'],
+                item['title'],
+                item['publisher'],
+                item['supplier'],
+                item['author'],
+                item['book_cover_type'],
+                item['book_cover_size'],
+                item['product_id'],
+                item['product_discription'],
+                item['weight'],
+                item['page_number'],
+                item['picture'],
+                item['current_price'],
+                item['old_price'],
+                item['discount'],
+                item['release_day']
+            )
+        )
+        self.cursor.commit()
+
 class Saveto_sqlServerFahasaPipeline_finalstate:
     def __init__(self, server, database, username, authentication):
         self.server = server
@@ -919,6 +1063,11 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
             ADD FOREIGN KEY (product_id)
             REFERENCES product_price_fahasa(product_id)
         ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            ADD FOREIGN KEY (product_id)
+            REFERENCES product_price_fahasa(product_id)
+        ''')
         self.cursor.commit()
 
     def update_foreign_key_data(self):
@@ -960,49 +1109,6 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         ''')
         self.cursor.commit()
 
-    def data_type(self):
-        self.cursor.execute('''
-            UPDATE books_fahasa
-            SET  weight = 0
-            WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
-        ''')
-        self.cursor.execute('''
-            UPDATE books_fahasa
-            SET page_number = 0
-            WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE books_fahasa
-            ALTER COLUMN weight INT
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE books_fahasa
-            ALTER COLUMN page_number INT
-        ''')
-        self.cursor.execute('''
-            UPDATE product_price_fahasa
-            SET  old_price = 0
-            WHERE old_price IS NULL OR old_price ='None'  ; -- Replace 0 with the desired value
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE product_price_fahasa
-            ALTER COLUMN old_price INT
-        ''')
-        self.cursor.execute('''
-            ALTER TABLE product_price_fahasa
-            ALTER COLUMN current_price INT
-        ''')
-        self.cursor.execute('''
-            UPDATE discount_fahasa
-            SET discount_info = CAST(REPLACE(discount_info, '%', '') AS DECIMAL(18, 2)) / 100
-            WHERE discount LIKE '%%' ; -- Filter only rows with percentage values        
-        ''')
-        self.cursor.execute('''
-            UPDATE discount_fahasa
-            SET discount_info = CAST(discount_info AS DECIMAL(10, 3));
-        ''')
-        self.cursor.commit()
-    
     def drop_unused_columns(self):
         # drop columns in books_fahasa table
         self.cursor.execute('''
@@ -1036,6 +1142,26 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         self.cursor.execute('''
             ALTER TABLE books_fahasa
             DROP COLUMN old_price
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN product_discription
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN weight
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN page_number
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN picture
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            DROP COLUMN release_day
         ''')
         self.cursor.commit()
 
@@ -1091,6 +1217,115 @@ class Saveto_sqlServerFahasaPipeline_finalstate:
         self.cursor.execute('''
             ALTER TABLE product_price_fahasa
             DROP COLUMN url
+        ''')
+        self.cursor.commit()
+
+        # drop columns in details_fahasa table
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN discount
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN current_price
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN old_price
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN book_cover_size
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN book_cover_type
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN author
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN supplier
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN publisher
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN title
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            DROP COLUMN url
+        ''')
+        self.cursor.commit()
+
+    def data_type(self):
+        # edit data type in books_fahasa table
+        self.cursor.execute('''
+            UPDATE books_fahasa
+            SET weight = 0
+            WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            UPDATE books_fahasa
+            SET page_number = 0
+            WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            ALTER COLUMN weight INT
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE books_fahasa
+            ALTER COLUMN page_number INT
+        ''')
+
+        # edit data type in product_price_fahasa
+        self.cursor.execute('''
+            UPDATE product_price_fahasa
+            SET  old_price = 0
+            WHERE old_price IS NULL OR old_price ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ALTER COLUMN old_price INT
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE product_price_fahasa
+            ALTER COLUMN current_price INT
+        ''')
+        self.cursor.execute('''
+            UPDATE discount_fahasa
+            SET discount_info = CAST(REPLACE(discount_info, '%', '') AS DECIMAL(18, 2)) / 100
+            WHERE discount_info LIKE '%%' ; -- Filter only rows with percentage values        
+        ''')
+        self.cursor.execute('''
+            UPDATE discount_fahasa
+            SET discount_info = CAST(discount_info AS DECIMAL(10, 3));
+        ''')
+
+        # edit data type in details_fahasa
+        self.cursor.execute('''
+            UPDATE details_fahasa
+            SET weight = 0
+            WHERE weight IS NULL OR weight ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            UPDATE details_fahasa
+            SET page_number = 0
+            WHERE page_number IS NULL OR page_number ='None'  ; -- Replace 0 with the desired value
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            ALTER COLUMN weight INT
+        ''')
+        self.cursor.execute('''
+            ALTER TABLE details_fahasa
+            ALTER COLUMN page_number INT
         ''')
         self.cursor.commit()
 
@@ -1224,7 +1459,7 @@ class FahasaPipeline:
         adapter[page_number] = value
 
         prices_pn = ['old_price', 'current_price', 'weight', 'book_cover_size']
-        list_symbol = [",", "đ", "'", " ", "." ,"cm"]
+        list_symbol = [",", "đ", "'", " ", '.' ,"cm"]
         for price in prices_pn:
             value = str(adapter.get(price))
             for symbol in list_symbol:
