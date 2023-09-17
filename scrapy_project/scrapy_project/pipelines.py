@@ -562,8 +562,7 @@ class Saveto_sqlServerFahasaPipeline:
         self.cursor.execute(
             '''
             CREATE TABLE books_fahasa (
-                product_code INT IDENTITY(1,1) ,
-                url NVARCHAR(255) UNIQUE,
+                url NVARCHAR(255),
                 title NVARCHAR(500) ,
                 publisher NVARCHAR(500) ,
                 supplier NVARCHAR(500) ,
@@ -579,7 +578,7 @@ class Saveto_sqlServerFahasaPipeline:
                 old_price NVARCHAR(30 ) ,
                 discount NVARCHAR(20) ,
                 release_day NVARCHAR(200) ,
-                PRIMARY KEY (product_code) 
+                PRIMARY KEY (url, title) 
             )
             '''
         )
@@ -665,7 +664,6 @@ class Saveto_sqlServerFahasaPipeline:
         self.cursor.execute(
             '''
             CREATE TABLE details_fahasa (
-                product_code INT IDENTITY(1,1) ,
                 url NVARCHAR(255) ,
                 title NVARCHAR(500) ,
                 publisher NVARCHAR(500) ,
