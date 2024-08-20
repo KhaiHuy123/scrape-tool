@@ -1,4 +1,4 @@
-# Scrape Tool
+# scrape tool
 
 Data collection is one of the most crucial steps before building any applications. We need to know where the data comes from. Does it come from heaven? No, data can be collected from various sources such as published databases, websites, the cloud, and more. In this repository, the main focus is on collecting data from websites, which is achieved through the use of two popular Python frameworks: Selenium and Scrapy.
 
