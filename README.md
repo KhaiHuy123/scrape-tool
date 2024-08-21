@@ -16,10 +16,6 @@ A significant challenge with tools created by these frameworks is the need for o
 
 This repository is a work in progress. One future update is to run Scrapy spiders on the cloud. Nowadays, various services such as DigitalOcean and Scrapyd, provide solutions for running scraping tools and storing data on the cloud. Additionally, building applications like web apps or desktop apps ensures that the scraping efforts are not in vain. For this purpose, I created a simple desktop app using Python's Tkinter framework, which facilitates app development.
 
-Please note that the information presented here might be incomplete or incorrect. For any questions or clarifications, feel free to contact me at nkhuy1109@gmail.com.
-
-Thank you for your interest.
-
 More Information:
 
 **Selenium Framework:**
